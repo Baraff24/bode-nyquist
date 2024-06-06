@@ -14,9 +14,11 @@ The script defines a transfer function for a given control system and computes i
 
 ## Transfer Function
 
-The transfer function \( G(s) \) is defined as:
+The transfer function \( G(s) \) in this project is defined with a specific elementary gain and polynomial structure in both the numerator and the denominator. The script defines the transfer function as follows:
 
-\[ G(s) = \frac{3000}{s(s^2 + 0.1s + 16)(s - 40)} \]
+G(s) = K/[s*(s^2 + 0.1s + 16)*(s - 40)]
+
+In the script, this transfer function is represented by specifying the coefficients of the numerator and the denominator polynomials in descending order of \( s \). If a term is missing (e.g., no \( s^2 \) term), a coefficient of 0 is used in its place.
 
 ## Script Breakdown
 
@@ -36,3 +38,7 @@ The transfer function \( G(s) \) is defined as:
 
 4. **Result Display**:
    The script displays all the computed results including the transfer function zeros, poles, gain, magnitude, phase, gain crossover frequencies, gain margin, and phase margin.
+
+---------------------------------------------------
+
+Feel free to customize it further as needed!
