@@ -1,77 +1,91 @@
 % Definition of the transfer function
-K = 3000; % Elementary gain
+K = 8; % Elementary gain
 
-% Use this command to define the "raw" transfer function
-% s=tf('s')
-% Then define the transfer function ==> G = 3000/(s*(s^2+0.1*s+16)*(s-40))
-% Finally, list numerator and denominator in descending order
-% (if there's no s term, write 0)
+% Creation of the transfer function without delay
+s = tf('s');
+H = K / (s * (s + 2)^2);
+% It can also be written like this
+% num = K;
+% den = [1 4 4 0];
+% H = tf(num, den);
 
-% Creating the transfer function
-num = K;
-den = [1 39.9 12 -640 0];
-H = tf(num, den);
+% Modify this variable if the function has pure delay
+delay = false;
 
-% Bode plot (magnitude and phase)
+if delay == true
+    % Definition of the pure delay
+    T_delay = 2; % Delay in seconds
+
+    % Approximation of the pure delay with a 10th-order Padé series
+    [num_delay, den_delay] = pade(T_delay, 10);
+    H_delay = tf(num_delay, den_delay);
+
+    % Total transfer function with delay
+    H_total = H * H_delay;
+else
+    H_total = H;
+end
+
+% Bode plot
 figure;
-bode(H);
+bode(H_total);
 grid on;
 title('Bode Diagram');
 
 % Nyquist plot
 figure;
-nyquist(H);
+nyquist(H_total);
 grid on;
 title('Nyquist Diagram');
 
-% Transfer function zeros
-zeros = zero(H);
+% Zeros of the transfer function
+zeros_total = zero(H_total);
 
-% Transfer function poles
-poles = pole(H);
+% Poles of the transfer function
+poles_total = pole(H_total);
 
 % Elementary gain
-gain = dcgain(H);
+gain_total = dcgain(H_total);
 
 % Magnitude of the transfer function
-[mag, phase, wout] = bode(H);
-mag = squeeze(mag);
-phase = squeeze(phase);
-wout = squeeze(wout);
+[mag_total, phase_total, wout_total] = bode(H_total);
+mag_total = squeeze(mag_total);
+phase_total = squeeze(phase_total);
+wout_total = squeeze(wout_total);
 
-% Calculating gain crossover frequencies
-break_frequencies = abs(poles);
+% Calculation of the break frequencies
+break_frequencies_total = abs(poles_total);
 
-% Calculating phase margin and gain margin
-[GM, PM, Wcg, Wcp] = margin(H);
+% Calculation of phase and gain margins
+[GM_total, PM_total, Wcg_total, Wcp_total] = margin(H_total);
 
-% Converting gain margin from gain units to dB
-GM_dB = 20 * log10(GM);
+% Convert the gain margin from gain units to dB
+GM_dB_total = 20 * log10(GM_total);
 
-% Displaying results
-disp('Transfer function zeros:');
-disp(zeros);
+% Displaying the results
+disp('Zeros of the transfer function:');
+disp(zeros_total);
 
-disp('Transfer function poles:');
-disp(poles);
+disp('Poles of the transfer function:');
+disp(poles_total);
 
 disp('Elementary gain:');
-disp(gain);
+disp(gain_total);
 
 disp('Magnitude of the transfer function at different frequencies:');
-disp(table(wout, mag, phase));
+disp(table(wout_total, mag_total, phase_total));
 
-disp('Gain crossover frequencies:');
-disp(break_frequencies);
+disp('Break frequencies:');
+disp(break_frequencies_total);
 
 disp('Gain margin (dB):');
-disp(GM_dB);
+disp(GM_dB_total);
 
 disp('Phase margin (degrees):');
-disp(PM);
+disp(PM_total);
 
-disp('Gain crossover frequency (rad/s):');
-disp(Wcg);
+disp('Unity gain frequency (rad/s):');
+disp(Wcg_total);
 
 disp('Phase crossover frequency (rad/s):');
-disp(Wcp);
+disp(Wcp_total);
